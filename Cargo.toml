@@ -1,0 +1,7 @@
+[package]
+name = "othello"
+version = "0.1.0"
+authors = ["ejmount <gentlemanoctopus@github.fake>"]
+edition = "2018"
+
+[dependencies]
