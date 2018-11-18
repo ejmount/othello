@@ -5,3 +5,4 @@ authors = ["ejmount <gentlemanoctopus@github.fake>"]
 edition = "2018"
 
 [dependencies]
+arrayvec = "0.4.7"
