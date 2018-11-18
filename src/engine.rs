@@ -1,10 +1,7 @@
-use crate::board::{Board, Colour, Move};
+use crate::board::{Board, Colour};
+use crate::player::Player;
 
-trait Player {
-    fn get_move(&mut self, b: &Board, availiable: &mut Iterator<Item = Move>) -> Option<Move>;
-}
-
-struct Engine {
+pub struct Engine {
     light_player: Box<Player>,
     dark_player: Box<Player>,
     turn: Colour,
@@ -14,7 +11,7 @@ struct Engine {
 }
 
 impl Engine {
-    fn new(
+    pub fn new(
         light_player: impl 'static + Player,
         dark_player: impl 'static + Player,
         board: Board,
@@ -30,7 +27,7 @@ impl Engine {
     }
 
     pub fn get_board(&self) -> &Board {
-    	return &self.board;
+        return &self.board;
     }
 
     fn take_turn(&mut self) -> bool {
@@ -58,15 +55,16 @@ impl Engine {
                 self.turn = Colour::Light;
             }
         }
+
         return valid_move;
     }
 
-    fn run_to_end(&mut self) {
-    	loop {
-    		let _ = self.take_turn();
-    		if !self.dark_move && !self.light_move {
-    			break;
-    		}
-    	}
+    pub fn run_to_end(&mut self) {
+        loop {
+            self.take_turn();
+            if !self.dark_move && !self.light_move {
+                break;
+            }
+        }
     }
 }
