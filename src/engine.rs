@@ -38,7 +38,7 @@ impl Engine {
         let mut moves = self.board.get_moves(self.turn).peekable();
         let valid_move = moves.peek().is_some();
         if moves.peek().is_some() {
-            let mov = player.get_move(self.turn, &self.board, &mut moves);
+            let mov = player.get_move(&self.board, &mut moves);
             std::mem::drop(moves);
             if let Some(m) = mov {
                 self.board.apply_move(m);
