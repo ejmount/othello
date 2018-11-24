@@ -11,11 +11,7 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn new(
-        light_player: impl 'static + Player,
-        dark_player: impl 'static + Player,
-        board: Board,
-    ) -> Engine {
+    pub fn new(light_player: impl Player, dark_player: impl Player, board: Board) -> Engine {
         Engine {
             board,
             light_player: Box::new(light_player),
@@ -37,7 +33,7 @@ impl Engine {
         };
         let mut moves = self.board.get_moves(self.turn).peekable();
         let valid_move = moves.peek().is_some();
-        if moves.peek().is_some() {
+        if valid_move {
             let mov = player.get_move(&self.board, &mut moves);
             std::mem::drop(moves);
             if let Some(m) = mov {
