@@ -9,7 +9,7 @@ pub enum Colour {
 }
 type GridSlot = Option<Colour>;
 
-const BOARD_SIZE: usize = 8;
+pub const BOARD_SIZE: usize = 8;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Direction(i8, i8);
@@ -34,6 +34,12 @@ impl Position {
             None
         }
     }
+    pub fn get_x(&self) -> usize {
+        self.0
+    }
+    pub fn get_y(&self) -> usize {
+        self.1
+    }
 }
 impl Add<Direction> for Position {
     type Output = Option<Position>;
@@ -50,14 +56,20 @@ impl Add<Direction> for Position {
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Move {
-    origin: Position,
-    dir: Direction,
-    team: Colour,
+    pub origin: Position,
+    pub dir: Direction,
+    pub team: Colour,
+    _private: (), // Stops public construction
 }
 
 impl Move {
     fn new(origin: Position, dir: Direction, team: Colour) -> Move {
-        Move { origin, dir, team }
+        Move {
+            origin,
+            dir,
+            team,
+            _private: (),
+        }
     }
 }
 
@@ -99,26 +111,33 @@ impl Board {
         return result;
     }
 
+    pub fn get_empty_at_end_of_line(&self, origin: Position, going: Direction) -> Option<Position> {
+        let starting_team = self.get(origin)?;
+        let mut capturing = false;
+        for p in self.get_line(origin, going) {
+            match self.get(p) {
+                Some(u) if starting_team == u => return None,
+                Some(u) if starting_team != u => {
+                    capturing = true;
+                }
+                None if capturing => return Some(p),
+                None => return None,
+                _ => {}
+            }
+        }
+        return None;
+    }
+
     pub fn get_moves_from_cell<'a>(
         &'a self,
         t: Colour,
         origin: Position,
     ) -> impl 'a + Iterator<Item = Move> {
-        let get_move_in_direction = move |d: &Direction| {
-            let mut capturing = false;
-            for p in self.get_line(origin, *d) {
-                match self.get(p) {
-                    Some(u) if t == u => return None,
-                    Some(u) if t != u => {
-                        capturing = true;
-                    }
-                    None if capturing => return Some(Move::new(origin, *d, t)),
-                    None => return None,
-                    _ => {}
-                }
-            }
-            return None;
-        };
+        let get_move_in_direction =
+            move |d: &Direction| match self.get_empty_at_end_of_line(origin, *d) {
+                Some(_) => Some(Move::new(origin, *d, t)),
+                None => None,
+            };
         DIRECTIONS.iter().flat_map(get_move_in_direction)
     }
 
