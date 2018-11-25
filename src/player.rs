@@ -3,6 +3,8 @@ use crate::board::Colour;
 use crate::board::Move;
 use crate::board::Position;
 use crate::board::BOARD_SIZE;
+use rand::seq::IteratorRandom;
+use rand::Rng;
 
 pub trait Player: 'static {
     fn get_move(&mut self, b: &Board, availiable: &mut Iterator<Item = Move>) -> Option<Move>;
@@ -13,6 +15,15 @@ pub struct BasicPlayer {}
 impl Player for BasicPlayer {
     fn get_move(&mut self, _b: &Board, availiable: &mut Iterator<Item = Move>) -> Option<Move> {
         availiable.next()
+    }
+}
+
+pub struct RandomPlayer<R: Rng + 'static> {
+    pub rng: R,
+}
+impl<R: Rng + 'static> Player for RandomPlayer<R> {
+    fn get_move(&mut self, _b: &Board, availiable: &mut Iterator<Item = Move>) -> Option<Move> {
+        availiable.choose(&mut self.rng)
     }
 }
 
