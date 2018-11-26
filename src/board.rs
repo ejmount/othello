@@ -53,6 +53,11 @@ impl Add<Direction> for Position {
         }
     }
 }
+lazy_static! {
+    static ref POSITIONS: Vec<Position> = (0..BOARD_SIZE)
+        .flat_map(|r| (0..BOARD_SIZE).map(move |c| Position(r, c)))
+        .collect();
+}
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Move {
@@ -142,16 +147,10 @@ impl Board {
     }
 
     pub fn get_moves<'a>(&'a self, t: Colour) -> impl 'a + Iterator<Item = Move> {
-        let mut positions = ArrayVec::<[_; BOARD_SIZE * BOARD_SIZE]>::new();
-        for r in 0..BOARD_SIZE {
-            for c in 0..BOARD_SIZE {
-                positions.push(Position(r, c));
-            }
-        }
-        positions
-            .into_iter()
-            .filter(move |p| Some(t) == self.get(*p))
-            .flat_map(move |p| self.get_moves_from_cell(t, p))
+        POSITIONS
+            .iter()
+            .filter(move |&p| Some(t) == self.get(*p))
+            .flat_map(move |&p| self.get_moves_from_cell(t, p))
     }
 
     pub fn apply_move(&mut self, m: Move) {
