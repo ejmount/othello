@@ -29,9 +29,10 @@ impl<R: Rng + 'static> Player for RandomPlayer<R> {
 
 pub struct Human {}
 impl Human {
-    const MAP: [char; 15] = [
-        '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-    ];
+    const MAP: [char; 33] = [
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', /*'D',*/ 'E',
+        'F', 'G', 'H', 'I', 'J', 'K', /*'L',*/ 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    ]; // This should be enough so long as the board is only 8x8. Ambigious entries removed.
 }
 
 impl Player for Human {
@@ -57,8 +58,8 @@ impl Player for Human {
                 let val = b.get(p);
 
                 match val {
-                    Some(Colour::Light) => board_display[r][c] = '+',
-                    Some(Colour::Dark) => board_display[r][c] = '-',
+                    Some(Colour::Light) => board_display[r][c] = 'L',
+                    Some(Colour::Dark) => board_display[r][c] = 'D',
                     None => {}
                 }
             }
