@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 mod board;
 mod engine;
 mod player;
@@ -7,12 +10,18 @@ use self::engine::Engine;
 use self::player::*;
 
 fn main() {
-    let b = Board::default();
+    for _ in 0..10000 {
+        let b = Board::default();
 
-    let light = BasicPlayer {};
-    let dark = Human {};
+        let light = Human {
+            //rng: rand::thread_rng(),
+        };
+        let dark = RandomPlayer {
+            rng: rand::thread_rng(),
+        };
 
-    let mut e = Engine::new(light, dark, b);
-    e.run_to_end();
-    print!("End: {}", e.get_board());
+        let mut e = Engine::new(light, dark, b);
+        e.run_to_end();
+        //print!("End: {}", e.get_board());
+    }
 }
