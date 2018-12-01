@@ -170,6 +170,21 @@ impl Board {
             }
         }
     }
+
+    pub fn get_score(&self) -> (usize, usize) {
+        let mut light = 0;
+        let mut dark = 0;
+        let all_cells = self.grid.iter().flat_map(|x| x.iter());
+        for c in all_cells {
+            match &c {
+                Some(Colour::Light) => {light += 1},
+                Some(Colour::Dark) => {dark += 1},
+                None => {}
+            }
+        }
+        return (dark, light);
+    }
+
 }
 impl Default for Board {
     fn default() -> Board {
