@@ -30,8 +30,9 @@ impl<R: Rng + 'static> Player for RandomPlayer<R> {
 pub struct Human {}
 impl Human {
     const MAP: [char; 33] = [
-        '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', /*'D',*/ 'E',
-        'F', 'G', 'H', 'I', 'J', 'K', /*'L',*/ 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', /*'D',*/ 'E', 'F', 'G',
+        'H', 'I', 'J', 'K', /*'L',*/ 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+        'X', 'Y', 'Z',
     ]; // This should be enough so long as the board is only 8x8. Ambigious entries removed.
 }
 
