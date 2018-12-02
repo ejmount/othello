@@ -7,6 +7,15 @@ pub enum Colour {
     Light,
     Dark,
 }
+impl Colour {
+    pub fn opposite(&self) -> Colour {
+        match self {
+            Colour::Light => Colour::Dark,
+            Colour::Dark => Colour::Light,
+        }
+    }
+}
+
 type GridSlot = Option<Colour>;
 
 pub const BOARD_SIZE: usize = 8;
@@ -78,7 +87,7 @@ impl Move {
     }
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone)]
 pub struct Board {
     grid: [[GridSlot; BOARD_SIZE]; BOARD_SIZE],
 }
@@ -177,14 +186,13 @@ impl Board {
         let all_cells = self.grid.iter().flat_map(|x| x.iter());
         for c in all_cells {
             match &c {
-                Some(Colour::Light) => {light += 1},
-                Some(Colour::Dark) => {dark += 1},
+                Some(Colour::Light) => light += 1,
+                Some(Colour::Dark) => dark += 1,
                 None => {}
             }
         }
         return (dark, light);
     }
-
 }
 impl Default for Board {
     fn default() -> Board {
