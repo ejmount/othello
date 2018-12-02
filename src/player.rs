@@ -57,7 +57,7 @@ impl Player for Human {
 
         for r in 0..BOARD_SIZE {
             for c in 0..BOARD_SIZE {
-                let p = Position::new(r, c).unwrap();
+                let p = Position::new(r, c);
                 let val = b.get(p);
 
                 match val {

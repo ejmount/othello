@@ -1,6 +1,5 @@
-use arrayvec::ArrayVec;
 use std::fmt;
-use std::ops::Add;
+use std::ops::{Add, Mul};
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum Colour {
@@ -32,16 +31,19 @@ const DIRECTIONS: [Direction; 8] = [
     Direction(-1, 1),
     Direction(1, 1),
 ];
+impl Mul<i8> for Direction {
+    type Output = Direction;
+    fn mul(self, f: i8) -> Direction {
+        Direction(self.0 * f, self.1 * f)
+    }
+}
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Position(usize, usize);
 impl Position {
-    pub fn new(x: usize, y: usize) -> Option<Position> {
-        if x < BOARD_SIZE && y < BOARD_SIZE {
-            Some(Position(x, y))
-        } else {
-            None
-        }
+    pub fn new(x: usize, y: usize) -> Position {
+        assert!(x < BOARD_SIZE && y < BOARD_SIZE);
+        Position(x, y)
     }
     pub fn get_x(&self) -> usize {
         self.0
@@ -51,15 +53,11 @@ impl Position {
     }
 }
 impl Add<Direction> for Position {
-    type Output = Option<Position>;
-    fn add(self, o: Direction) -> Option<Position> {
+    type Output = Position;
+    fn add(self, o: Direction) -> Position {
         let x = self.0 as isize + o.0 as isize;
         let y = self.1 as isize + o.1 as isize;
-        if 0 <= x && x < BOARD_SIZE as isize && 0 <= y && y < BOARD_SIZE as isize {
-            Position::new(x as usize, y as usize)
-        } else {
-            None
-        }
+            Position(x as usize,y as usize)
     }
 }
 lazy_static! {
@@ -110,25 +108,30 @@ impl Board {
         self.grid[x][y] = v;
     }
 
-    pub fn get_line(&self, origin: Position, going: Direction) -> ArrayVec<[Position; BOARD_SIZE]> {
-        let mut current_position = origin;
-        let mut result = ArrayVec::new();
-        loop {
-            let next_position = current_position + going;
-            if let Some(p) = next_position {
-                result.push(p);
-                current_position = p;
-            } else {
-                break;
-            }
-        }
-        return result;
+    const BOARD_SIZE_I32 : i32 = BOARD_SIZE as i32;
+    const FAR_AWAY : i32 = Self::BOARD_SIZE_I32*2;
+
+    pub fn get_line(origin: Position, going: Direction) -> impl Iterator<Item = Position> {
+        let x_boundary = match going.0 {
+            x if x > 0 => Self::BOARD_SIZE_I32,
+            x if x < 0 => -1,
+            _ => Self::FAR_AWAY
+        } as i32;
+        let y_boundary = match going.1 {
+            y if y > 0 => Self::BOARD_SIZE_I32,
+            y if y < 0 => -1,
+            _ => Self::FAR_AWAY
+        };
+        let dist_x = (origin.0 as i32 - x_boundary).abs();
+        let dist_y = (origin.1 as i32 - y_boundary).abs();
+        let min_steps = std::cmp::min(dist_x, dist_y) as i8;
+        (1..min_steps).map(move |s| (origin + (going * s)))
     }
 
     pub fn get_empty_at_end_of_line(&self, origin: Position, going: Direction) -> Option<Position> {
         let starting_team = self.get(origin)?;
         let mut capturing = false;
-        for p in self.get_line(origin, going) {
+        for p in Self::get_line(origin, going) {
             match self.get(p) {
                 Some(u) if starting_team == u => return None,
                 Some(u) if starting_team != u => {
@@ -163,7 +166,7 @@ impl Board {
     }
 
     pub fn apply_move(&mut self, m: Move) {
-        for p in self.get_line(m.origin, m.dir) {
+        for p in Self::get_line(m.origin, m.dir) {
             let cell = self.get_mut(p);
             match *cell {
                 Some(u) if u != m.team => {
