@@ -17,7 +17,6 @@ pub struct TreeNode {
 pub struct MonteCarloPlayer {
     pub cache: Vec<TreeNode>,
     pub leaves: Vec<u32>,
-    
 }
 impl MonteCarloPlayer {
     pub fn new() -> MonteCarloPlayer {
@@ -25,7 +24,6 @@ impl MonteCarloPlayer {
         cache.reserve(5_000_000);
         let mut leaves = vec![];
         leaves.reserve(1_000_000);
-        
         MonteCarloPlayer { cache, leaves }
     }
 
