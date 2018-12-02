@@ -3,25 +3,27 @@ extern crate lazy_static;
 
 mod board;
 mod engine;
+mod monte;
 mod player;
 
 use self::board::*;
-use self::engine::Engine;
+//use self::engine::Engine;
 use self::player::*;
+use crate::monte::MonteCarloPlayer;
 
 fn main() {
-    for _ in 0..10000 {
-        let b = Board::default();
+    let mut p = MonteCarloPlayer::new();
+    let b = Board::default();
 
-        let light = Human {
-            //rng: rand::thread_rng(),
-        };
-        let dark = RandomPlayer {
-            rng: rand::thread_rng(),
-        };
-
-        let mut e = Engine::new(light, dark, b);
-        e.run_to_end();
-        //print!("End: {}", e.get_board());
+    p.build_tree(&b, 4, Colour::Dark);
+    println!("{:?} leaves, {:?} nodes", p.leaves.len(), p.cache.len());
+    for l in p.leaves.clone() {
+        p.play_node(l as usize, Colour::Dark);
+    }
+    println!("{:?} wins of {:?} plays", p.cache[0].wins, p.cache[0].plays);
+    for n in p.cache.iter() {
+        if n.parent != -1 && p.cache[n.parent as usize].parent == -1 {
+            println!("{:?} {:?} {:?}", n.mov, n.wins, n.plays);
+        }
     }
 }
