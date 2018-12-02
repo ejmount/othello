@@ -10,6 +10,7 @@ pub trait Player: 'static {
     fn get_move(&mut self, b: &Board, availiable: &mut Iterator<Item = Move>) -> Option<Move>;
 }
 
+#[allow(dead_code)]
 pub struct BasicPlayer {}
 
 impl Player for BasicPlayer {
@@ -27,6 +28,7 @@ impl<R: Rng + 'static> Player for RandomPlayer<R> {
     }
 }
 
+#[allow(dead_code)]
 pub struct Human {}
 impl Human {
     const MAP: [char; 33] = [
