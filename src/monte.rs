@@ -1,4 +1,3 @@
-use rand::Rng;
 use crate::board::Board;
 use crate::board::Colour;
 use crate::board::Move;
