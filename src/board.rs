@@ -116,7 +116,7 @@ impl Board {
             x if x > 0 => Self::BOARD_SIZE_I32,
             x if x < 0 => -1,
             _ => Self::FAR_AWAY
-        } as i32;
+        };
         let y_boundary = match going.1 {
             y if y > 0 => Self::BOARD_SIZE_I32,
             y if y < 0 => -1,
